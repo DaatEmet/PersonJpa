@@ -10,9 +10,7 @@ import telran.ashkelon2020.person.model.Person;
 
 public interface PersonRepository extends JpaRepository<Person, Integer>{
 	
-	@Transactional
 	Stream<Person> findPersonsByName(String name);
 	
-	@Transactional
 	Stream<Person> findPersonsByBirthDateBetween(LocalDate from, LocalDate to);
 }

@@ -4,11 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import telran.ashkelon2020.person.dao.PersonRepository;
 import telran.ashkelon2020.person.dto.PersonDto;
@@ -24,6 +23,7 @@ public class PersonServiceImpl implements PersonService {
 	ModelMapper modelMapper;
 
 	@Override
+	@Transactional
 	public boolean addPerson(PersonDto personDto) {
 		Person person = personRepository.findById(personDto.getId()).orElse(null);
 		if(person == null) {
@@ -43,20 +43,23 @@ public class PersonServiceImpl implements PersonService {
 	}
 
 	@Override
+	@Transactional
 	public PersonDto updatePerson(Integer id, String name) {
 		Person person = personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException());
-		if(name != null) person.setName(name);
+		person.setName(name);
+		personRepository.save(person);
 		return modelMapper.map(person, PersonDto.class);
 	}
 
 	@Override
+	@Transactional
 	public PersonDto deletePerson(Integer id) {
 		Person person = personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException());
 		personRepository.delete(person);
 		return modelMapper.map(person, PersonDto.class);
 	}
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public List<PersonDto> getPersonsByName(String name) {
 		return personRepository.findPersonsByName(name)
@@ -65,7 +68,7 @@ public class PersonServiceImpl implements PersonService {
 
 	}
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public List<PersonDto> getPersonsByDate(LocalDate from, LocalDate to) {
 		return personRepository.findPersonsByBirthDateBetween(from, to)
