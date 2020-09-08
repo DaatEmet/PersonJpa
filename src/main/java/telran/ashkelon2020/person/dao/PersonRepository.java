@@ -36,6 +36,6 @@ public interface PersonRepository extends JpaRepository<Person, Integer>{
 	Stream<Employee> findEmployeeBySalaryBetween(int min, int max);
 	
 	
-	@Query("select p from Person p where p.kindergarten ")
+	@Query("select p from Person p where p.kindergarten is not null")
 	Stream<Child> findAllChildren();
 }
